@@ -41,3 +41,27 @@
 
     margin: 0;
 }
+
+.title > .data-form > * {
+
+    margin-bottom: 0;
+}
+
+.title input {
+    
+    color: #222;
+}
+
+.title button {
+
+    background-color: #3F4B3B;
+    color: #FFF;
+    border: #FFF;
+}
+
+.title button:disabled {
+
+    background-color: #8FBC94;
+    color: #222;
+    border: #222;
+}

@@ -155,9 +155,11 @@ export default class extends Component {
                     {
                         form && (
                             <div className="data-form row">
-                                <input type="text" placeholder="titre de la page" className="four columns"
-                                       onChange={ (e) => this.setState({ form: { title: e.target.value }}) } />
+                                <input type="text" className="four columns"
+                                        placeholder={ 'titre pour la page "' + key + '"' }
+                                        onChange={ (e) => this.setState({ form: { title: e.target.value }}) } />
                                 <button type="button" className="four columns"
+                                        disabled={ !this.state.form.title && 'disabled' }
                                         onClick={ () => this.sendForm() }>
                                     envoyer</button>
                                 <button type="button" className="four columns"
