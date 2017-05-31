@@ -49,13 +49,10 @@ export default class extends Component {
 
             const data = snapshot.val()
 
-            if (data)
+            if (data) 
+                this.setState({ data, key })
 
-                this.setState({ data, key: null })
-
-            else
-
-                this.setState({ data: null, key })
+            else this.setState({ data: null, key })
         })
     }
 
@@ -66,23 +63,47 @@ export default class extends Component {
 
     sendForm() {
         
-        const { key, form: { title }} = this.state
+        const currentUser = firebase.auth().currentUser
+        console.log(currentUser)
 
-        firebase.database().ref('/datas/'+ key ).set({
-            title,
-            keywords: [],
-            links: [],
-            props: {
-                context: [],
-                inputs: [],
-                outputs: [],
-                functions: []
-            }
-        }).then(() => {
+        if (currentUser) {
 
-            this.setState({ form: null, key: null })
-            this.search(key)
-        })
+            const { key, form: { title }} = this.state
+
+            firebase.database().ref('/datas/'+ key ).set({
+
+                author: currentUser.uid,
+                title,
+                keywords: [],
+                links: [],
+                props: {
+                    context: [],
+                    inputs: [],
+                    outputs: [],
+                    functions: []
+                }
+            }).then(() => {
+
+                this.setState({ 
+                    form: null,
+                    key: null
+                })
+                
+                this.search(key)
+            })
+        }
+    }
+
+    deleteData() {
+
+        const { data: { title }, key } = this.state
+
+        console.log(title, key)
+
+        if (window.confirm('voulez-vous vraiment supprimer votre page "' + title + '" [' + key + '] ?')) {
+
+            const dataRef = firebase.database().ref('datas/' + key).remove().then(() => this.search())
+        }
     }
 
     render() {
@@ -139,10 +160,15 @@ export default class extends Component {
                 </div>
                 <div className="title">
 
-                    { data && <h1>{ data.title }</h1> }
+                    { data && (
+                        <h1>{ data.title } {
+                            data.author === firebase.auth().currentUser.uid && <span
+                                    onClick={ this.deleteData.bind(this) }>[x]</span>    
+                        }</h1>
+                     )}
 
                     { 
-                        (!data && !form && key) && (
+                        ( !data && !form && key ) && (
                             <div>
                                 <p><b>"{ key }"</b> n'existe pas encore</p>
                                 <button type="button"
