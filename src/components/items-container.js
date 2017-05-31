@@ -1,5 +1,24 @@
 import React from 'react'
 
-export default () => (
-    <div></div>
-)
+import Item from './item'
+
+export default ({ itemType, items, propType }) => {
+
+    const itemList = (items || []).map((item, index) => {
+        
+        const params = { 
+            key: index,
+            itemType,
+            propType
+        }
+
+        return <Item { ...params } { ...item } />
+    })
+
+    return (
+
+        <div className={ itemType + 's-container' }>
+            { itemList }
+        </div>
+    )
+}
