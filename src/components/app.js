@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 
 import ItemsContainer from './items-container'
 
+import '../styles/app.css'
+
 const PROPS_TYPES = {
 
     context: 'contexte',
@@ -42,13 +44,13 @@ class App extends Component {
 
         return (
 
-            <div className="app">
-                <div className="header">
-                    <img src="" alt="logo" />
-                    <input type="text" placeholder="rechercher" />
+            <div className="app container">
+                <div className="header row">
+                    <h2 className="logo four columns">permadata</h2>
+                    <input type="text" className="search eight columns" placeholder="rechercher" />
                 </div>
                 <div className="title">
-                    <h1>{ this.state.data && this.state.data.title }</h1>
+                    <h1>{ this.state.data ? this.state.data.title : 'chargement ...' }</h1>
                 </div>
                 <div className="content">
                     <ItemsContainer { ...keywordsContainerParams } />

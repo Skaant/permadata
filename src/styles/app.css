@@ -1,0 +1,43 @@
+.header {
+
+    padding: 10px 0;
+}
+
+.header > .logo {
+
+    display: inline-block;
+    margin: 0;
+
+    text-align: center;
+    color: #222;
+}
+
+.header > .search {
+
+    height: 5rem;
+    margin-bottom: 0;
+
+    text-align: right;
+    color: #222;
+}
+
+.header > .search,
+.header > .search:hover,
+.header > .search:focus {
+    border: 0;
+    border-bottom: solid 1px #222;
+}
+
+.title {
+
+    padding: 10px;
+
+    background-color: #63A375;
+    text-align: center;
+    color: #FFF;
+}
+
+.title > h1 {
+
+    margin: 0;
+}
