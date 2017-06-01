@@ -36,6 +36,11 @@ export default class extends Component {
 
         firebase.auth().getRedirectResult().then(result => this.setState({ user: result.user }))
 
+        this.refresh()
+    }
+
+    refresh() {
+
         const key = this.state.key
 
         const dataRef = firebase.database().ref('datas/' + key )
@@ -49,11 +54,6 @@ export default class extends Component {
 
             else this.setState({ creation: true, form: { title: null } })
         })
-    }
-
-    refresh() {
-
-        this.search(this.state.key)
     }
 
     passiveSearch(e) {
@@ -125,6 +125,7 @@ export default class extends Component {
         const commonContainerParams = {
 
             dataId: key,
+            loaded: data !== null,
             refresh: this.refresh.bind(this)
         }
 
@@ -132,14 +133,14 @@ export default class extends Component {
 
             itemType: 'keyword',
             title: 'mots-clés',
-            items: this.state.data && this.state.data.keywords
+            items: data && data.keywords
         })
 
         const linksContainerParams = Object.assign({}, commonContainerParams, {
 
             itemType: 'link',
             title: 'relations',
-            items: this.state.data && this.state.data.links
+            items: data && data.links
         })
 
         const propsTypesContainers = Object.keys(PROPS_TYPES).map(prop => {
@@ -150,7 +151,7 @@ export default class extends Component {
                 itemType: 'prop',
                 propType: prop,
                 title: PROPS_TYPES[prop],
-                items: ( this.state.data && this.state.data.props ) && this.state.data.props[prop]
+                items: ( data && data.props ) && data.props[prop]
             })
 
             return <ItemsContainer { ...params } />
@@ -229,15 +230,20 @@ export default class extends Component {
                         )
                     }
                 </div>
-                <div className="content">
+                { 
+                    !creation && (
 
-                    <ItemsContainer { ...keywordsContainerParams } />
-                    <ItemsContainer { ...linksContainerParams } />
-                    <div className="props-section">
+                        <div className="content">
 
-                        { propsTypesContainers }
-                    </div>
-                </div>
+                            <ItemsContainer { ...keywordsContainerParams } />
+                            <ItemsContainer { ...linksContainerParams } />
+                            <div className="props-section">
+
+                                { propsTypesContainers }
+                            </div>
+                        </div>
+                    )
+                }
             </div>
         )
     }

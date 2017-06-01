@@ -23,6 +23,13 @@ export default ({ dataId, itemType, propType, refresh, index, value, votes, auth
     return (
         <div>
             { value } {
+                itemType === 'link' && (
+
+                    <span className="clickable" 
+                            onClick={ () => window.location.assign('/' + url) }>
+                        <b>({ url })</b></span>
+                )
+            } {
 
                 author === firebase.auth().currentUser.uid && (
                     <span className="clickable"

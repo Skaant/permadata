@@ -42,7 +42,8 @@ export default class extends Component {
 
     render() {
 
-        const { dataId, itemType,propType, refresh, title, items } = this.props
+        const { dataId, itemType, propType, loaded, refresh, title, items } = this.props
+
         const form = this.state ? this.state.form : null
 
         const itemList = (items || []).map((item, index) => {
@@ -69,7 +70,7 @@ export default class extends Component {
                 { itemList }
 
                 {
-                    this.state && form ? (
+                    loaded && form ? (
 
                         <div>
                             <input type="text" placeholder="le titre de l'idée"
