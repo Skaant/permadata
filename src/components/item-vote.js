@@ -16,12 +16,6 @@ export default ({ dataId, itemType, propType, refresh, index, votes = [] }) => {
             '/' + index + '/votes'
         )
 
-        console.log(
-
-            'datas/' + dataId + '/' + itemType + 's' + 
-            ( itemType === 'prop' ? '/' + propType : '' ) + 
-            '/' + index + '/votes')
-
         votesRef.once('value').then(snapshot => {
 
             let votes = snapshot.val() || []
@@ -30,7 +24,7 @@ export default ({ dataId, itemType, propType, refresh, index, votes = [] }) => {
 
                 votes.push(currentUserUid)
 
-            else votes.splice(index, 1)
+            else votes.splice(votes.indexOf(currentUserUid), 1)
         
             votesRef.set(votes).then(() => refresh())
         })
@@ -38,12 +32,10 @@ export default ({ dataId, itemType, propType, refresh, index, votes = [] }) => {
 
     return (
 
-        <div>
-            { votes.length }
-
-            <button type="button"
-                    onClick={ () => updateVote() }>
-                { userHasVoted ? 'dévoter' : 'voter ' }</button>
+        <div onClick={ () => updateVote() }>
+            <span type="button"
+                    className={ userHasVoted ? 'voted' : '' }>
+                { votes.length }</span>
         </div>
     )
 }
