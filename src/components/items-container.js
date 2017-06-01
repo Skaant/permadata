@@ -88,13 +88,15 @@ export default class extends Component {
                                     disabled={ ( itemType !== 'link' ? !form.value : !form.value || !form.url ) && 'disabled' }
                                     onClick={ () => this.sendForm() }>
                                 envoyer</button>
+                                
                             <button type="button">annuler</button>
                         </div>
                     ) : (
 
-                        <button type="button"
-                                onClick={ () => this.setState({ form: {} }) }>
-                            [+]</button>
+                        <div className={ itemType + '-item' }>
+                            <button type="button" className="plate add"
+                                onClick={ () => this.setState({ form: {} }) }></button>
+                        </div>
                     )
                 }
             </div>

@@ -5,6 +5,8 @@ import ItemVote from './item-vote'
 
 export default ({ dataId, itemType, propType, refresh, index, value, author, votes, url }) => {
 
+    const user = firebase.auth().currentUser
+
     const deleteItem = () => {
 
         const itemListRef = firebase.database().ref(
@@ -27,22 +29,30 @@ export default ({ dataId, itemType, propType, refresh, index, value, author, vot
 
     return (
 
-        <div>
-            { value } {
-                itemType === 'link' && (
+        <div className={ itemType + '-item' }>
 
-                    <span className="clickable" 
-                            onClick={ () => window.location.assign('/' + url) }>
-                        <b>({ url })</b></span>
-                )
-            } {
+            <p>
+                { value }
+                
+                {
+                    itemType === 'link' && (
 
-                author === firebase.auth().currentUser.uid && (
-                    <span className="clickable"
-                            onClick={ () => deleteItem() }>
-                        [x]</span>
-                )
-            }
+                        <span className="clickable" 
+                                onClick={ () => window.location.assign('/' + url) }>
+                            <b>({ url })</b></span>
+                    )
+                }
+                
+                {
+
+                    ( user && author === user.uid ) && (
+                        <span className="clickable"
+                                onClick={ () => deleteItem() }>
+                            [x]</span>
+                    )
+                }
+            </p>
+
             <ItemVote { ...itemVoteParams } />
         </div>
     )

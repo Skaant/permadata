@@ -3,9 +3,10 @@ import firebase from 'firebase'
 
 export default ({ dataId, itemType, propType, refresh, index, votes = [] }) => {
 
-    const currentUserUid = firebase.auth().currentUser.uid
+    const user = firebase.auth().currentUser
+    const userId = ( user && user.uid ) || null
 
-    const userHasVoted = votes.includes(currentUserUid)
+    const userHasVoted = votes.includes(userId)
 
     const updateVote = () => {
 
@@ -22,9 +23,9 @@ export default ({ dataId, itemType, propType, refresh, index, votes = [] }) => {
 
             if ( !userHasVoted )
 
-                votes.push(currentUserUid)
+                votes.push(userId)
 
-            else votes.splice(votes.indexOf(currentUserUid), 1)
+            else votes.splice(votes.indexOf(userId), 1)
         
             votesRef.set(votes).then(() => refresh())
         })

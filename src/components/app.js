@@ -66,13 +66,15 @@ export default class extends Component {
             
             dataRef.once('value').then(snapshot => {
                 
-                if ( !snapshot.val() )
+                if ( snapshot.val() )
 
-                    this.setState({ searchedDataMisses: true })
+                    this.setState({ searchFound: true })
 
-                else this.setState({ searchedDataMisses: null })
+                else this.setState({ searchFound: null })
             })
         }
+
+        else this.setState({ searchFound: null })
     }
 
     search(e) {
@@ -89,15 +91,15 @@ export default class extends Component {
 
     sendForm() {
         
-        const currentUser = firebase.auth().currentUser
+        const user = this.state.user
 
-        if (currentUser) {
+        if (user) {
 
             const { key, form: { title }} = this.state
 
             firebase.database().ref('/datas/'+ key ).set({
 
-                author: currentUser.uid,
+                author: user.uid,
                 title
             }).then(() => {
 
@@ -120,7 +122,7 @@ export default class extends Component {
 
     render() {
 
-        const { user, key, data, creation, form, searchedDataMisses } = this.state
+        const { user, key, data, creation, form, searchFound } = this.state
 
         const commonContainerParams = {
 
@@ -140,7 +142,7 @@ export default class extends Component {
 
             itemType: 'link',
             title: 'relations',
-            items: data && data.links
+            items: data && data.links,
         })
 
         const propsTypesContainers = Object.keys(PROPS_TYPES).map(prop => {
@@ -159,33 +161,40 @@ export default class extends Component {
 
         return (
 
-            <div className="app container">
+            <div>
 
-                <div className="header row">
+                <div className="navbar primary inline-container">
 
-                    <h2 className="logo four columns clickable"
+                    <h2 className="logo clickable"
                             onClick={ () => window.location.replace('/') }>permadata</h2>
 
                     <input type="text" placeholder="rechercher"
-                            className={ 'search six columns' + ( searchedDataMisses ? ' missing' : '' ) }
+                            className={ 'search clickable' + ( searchFound ? ' found' : '' ) }
                             onChange={ (e) => this.passiveSearch(e) }
                             onKeyPress={ (e) => this.search(e) } />
 
                     {
                         user ? (
 
-                            <button type="button" title={ user.displayName }
+                            <div className="authentication clickable"
                                     onClick={ () => firebase.auth().signOut() }>
-                                deconnexion</button>                            
+
+                                <p><b>{ user.displayName }</b></p>
+                                <p>déconnexion</p>
+                            </div>
                         ) : (
 
-                            <button type="button"
+                            <div className="authentication clickable"
                                     onClick={ () => firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()) }>
-                                connexion</button>
+                                
+                                <p><i>visiteur</i></p>
+                                <p>connexion</p>
+                            </div>
                         )
                     }
                 </div>
-                <div className="title">
+
+                <div className="main section">
 
                     {
                         !data && !creation && (
@@ -199,7 +208,7 @@ export default class extends Component {
 
                             <h1>{ data.title } {
 
-                                data.author === firebase.auth().currentUser.uid && (
+                                ( user && data.author === user.uid ) && (
 
                                     <span className="clickable"
                                             onClick={ () => this.deleteData() }>
@@ -209,10 +218,12 @@ export default class extends Component {
                         )
                     }
 
+                    { data && <ItemsContainer { ...keywordsContainerParams } /> }
+
                     {
                         creation && (
 
-                            <div className="data-form row">
+                            <div className="data-form">
 
                                 <input type="text" className="four columns"
                                         placeholder={ 'titre pour la page "' + key + '"' }
@@ -230,17 +241,23 @@ export default class extends Component {
                         )
                     }
                 </div>
+
+                { 
+                    !creation && (
+                    
+                        <div className="links section">
+                            
+                            <ItemsContainer { ...linksContainerParams } />
+                        </div>
+                    )
+                }
+
                 { 
                     !creation && (
 
-                        <div className="content">
+                        <div className="props">
 
-                            <ItemsContainer { ...keywordsContainerParams } />
-                            <ItemsContainer { ...linksContainerParams } />
-                            <div className="props-section">
-
-                                { propsTypesContainers }
-                            </div>
+                            { propsTypesContainers }
                         </div>
                     )
                 }
