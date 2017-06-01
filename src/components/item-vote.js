@@ -33,10 +33,8 @@ export default ({ dataId, itemType, propType, refresh, index, votes = [] }) => {
 
     return (
 
-        <div onClick={ () => updateVote() }>
-            <span type="button"
-                    className={ userHasVoted ? 'voted' : '' }>
-                { votes.length }</span>
-        </div>
+        <span className={ 'clickable' + ( userHasVoted ? ' voted' : '' ) }
+                onClick={ () => updateVote() }>
+            &nbsp;({ votes.length })</span>
     )
 }

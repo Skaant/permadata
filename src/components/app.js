@@ -24,6 +24,7 @@ export default class extends Component {
         firebase.initializeApp(firebaseConfig)
 
         this.state = {
+
             user: null,
             data: null,
             key: window.location.pathname.split('/')[1] || 'permadata'
@@ -149,113 +150,165 @@ export default class extends Component {
 
             const params = Object.assign({}, commonContainerParams, {
 
-                key: prop,
                 itemType: 'prop',
                 propType: prop,
                 title: PROPS_TYPES[prop],
                 items: ( data && data.props ) && data.props[prop]
             })
 
-            return <ItemsContainer { ...params } />
+            return (
+
+                <div key={ prop } className="column notification is-primary"
+                        style={ { margin: '0 5px' } }>
+
+                    <ItemsContainer { ...params } />
+                </div>
+            )
         })
 
         return (
 
             <div>
 
-                <div className="navbar primary inline-container">
+                <nav className="nav">
 
-                    <h2 className="logo clickable"
-                            onClick={ () => window.location.replace('/') }>permadata</h2>
+                    <div className="nav-left">
+                        
+                        <div className="nav-item">
+                            <h2 className="title clickable"
+                                onClick={ () => window.location.replace('/') }>permadata</h2>
+                        </div>
+                    </div>
 
-                    <input type="text" placeholder="rechercher"
-                            className={ 'search clickable' + ( searchFound ? ' found' : '' ) }
-                            onChange={ (e) => this.passiveSearch(e) }
-                            onKeyPress={ (e) => this.search(e) } />
+                    <div className="nav-center">
+
+                        <div className="nav-item">
+
+                            <p className="control has-icons-right">
+
+                                <input type="text" placeholder="rechercher"
+                                        className={ 'input search ' + ( searchFound ? ' is-success' : '' ) }
+                                        onChange={ (e) => this.passiveSearch(e) }
+                                        onKeyPress={ (e) => this.search(e) } />
+
+                                {
+                                    searchFound && (
+                                        <span className="icon is-small is-right">
+
+                                            <i className="fa fa-check"></i>
+                                        </span>
+                                    )
+                                }
+                            </p>
+                        </div>
+                    </div>
 
                     {
                         user ? (
 
-                            <div className="authentication clickable"
-                                    onClick={ () => firebase.auth().signOut() }>
+                            <div className="nav-right">
 
-                                <p><b>{ user.displayName }</b></p>
-                                <p>déconnexion</p>
+                                <div className="nav-item">
+
+                                    <p>salut <b>{ user.displayName.split(' ')[0].toLowerCase() }</b></p>
+                                </div>
+                                
+                                <div className="nav-item">
+
+                                    <button type="button" className="button"
+                                            onClick={ () => firebase.auth().signOut() }>
+                                        déconnexion</button>
+                                </div>
                             </div>
                         ) : (
 
-                            <div className="authentication clickable"
-                                    onClick={ () => firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()) }>
+                            <div className="nav-right clickable">
                                 
-                                <p><i>visiteur</i></p>
-                                <p>connexion</p>
+                                <div className="nav-item">
+
+                                    <p><i>visiteur</i></p>
+                                </div>
+
+                                <div className="nav-item">
+
+                                    <button type="button" className="button"
+                                            onClick={ () => firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()) }>
+                                        connexion</button>
+                                </div>
                             </div>
                         )
                     }
-                </div>
+                </nav>
 
-                <div className="main section">
+                <div className="container">
 
-                    {
-                        !data && !creation && (
-                            
-                            <h1>chargement ...</h1>
-                        )
-                    }
+                    <div className="notification is-primary">
+
+                        {
+                            !data && !creation && (
+                                
+                                <h1 className="title is-1">chargement ...</h1>
+                            )
+                        }
+
+                        { 
+                            data && (
+
+                                <h1 className="title is-1">{ data.title } {
+
+                                    ( user && data.author === user.uid ) && (
+
+                                        <button type="button" className="delete is-medium clickable"
+                                                onClick={ () => this.deleteData() }></button>
+                                    )
+                                }</h1>
+                            )
+                        }
+
+                        { data && <ItemsContainer { ...keywordsContainerParams } /> }
+
+                        {
+                            creation && (
+
+                                <div className="field is-grouped">
+
+                                    <p className="control">
+                                        <input type="text" className="input"
+                                                placeholder={ 'titre pour la page "' + key + '"' }
+                                                onChange={ (e) => this.setState({ form: { title: e.target.value }}) } />
+                                    </p>
+
+                                    <p className="control">      
+                                        <button type="button" className="button"
+                                                disabled={ ( !form || !form.title ) && 'disabled' }
+                                                onClick={ () => this.sendForm() }>
+                                            envoyer</button>
+                                    </p>
+
+                                    <p className="control">
+                                        <button type="button" className="button"
+                                                onClick={ () => this.setState({ form: null }) }>
+                                            annuler</button>
+                                    </p>
+                                </div>
+                            )
+                        }
+                    </div>
 
                     { 
                         data && (
-
-                            <h1>{ data.title } {
-
-                                ( user && data.author === user.uid ) && (
-
-                                    <span className="clickable"
-                                            onClick={ () => this.deleteData() }>
-                                        [x]</span>
-                                )
-                            }</h1>
-                        )
-                    }
-
-                    { data && <ItemsContainer { ...keywordsContainerParams } /> }
-
-                    {
-                        creation && (
-
-                            <div className="data-form">
-
-                                <input type="text" className="four columns"
-                                        placeholder={ 'titre pour la page "' + key + '"' }
-                                        onChange={ (e) => this.setState({ form: { title: e.target.value }}) } />
-                                        
-                                <button type="button" className="four columns"
-                                        disabled={ !form.title && 'disabled' }
-                                        onClick={ () => this.sendForm() }>
-                                    envoyer</button>
-
-                                <button type="button" className="four columns"
-                                        onClick={ () => this.setState({ form: null }) }>
-                                    annuler</button>
+                        
+                            <div className="notification is-primary">
+                                
+                                <ItemsContainer { ...linksContainerParams } />
                             </div>
                         )
                     }
                 </div>
-
                 { 
-                    !creation && (
-                    
-                        <div className="links section">
-                            
-                            <ItemsContainer { ...linksContainerParams } />
-                        </div>
-                    )
-                }
+                    data && (
 
-                { 
-                    !creation && (
-
-                        <div className="props">
+                        <div className="props columns">
 
                             { propsTypesContainers }
                         </div>

@@ -29,31 +29,28 @@ export default ({ dataId, itemType, propType, refresh, index, value, author, vot
 
     return (
 
-        <div className={ itemType + '-item' }>
+        <span className="item tag is-white is-medium">
 
-            <p>
-                { value }
-                
-                {
-                    itemType === 'link' && (
+            <span>{ value }</span>
+            
+            {
+                itemType === 'link' && (
 
-                        <span className="clickable" 
-                                onClick={ () => window.location.assign('/' + url) }>
-                            <b>({ url })</b></span>
-                    )
-                }
-                
-                {
-
-                    ( user && author === user.uid ) && (
-                        <span className="clickable"
-                                onClick={ () => deleteItem() }>
-                            [x]</span>
-                    )
-                }
-            </p>
+                    <span className="clickable" 
+                            onClick={ () => window.location.assign('/' + url) }>
+                        <b>({ url })</b></span>
+                )
+            }
 
             <ItemVote { ...itemVoteParams } />
-        </div>
+            
+            {
+
+                ( user && author === user.uid ) && (
+                    <button type="button" className="delete is-medium clickable"
+                            onClick={ () => deleteItem() }></button>
+                )
+            }
+        </span>
     )
 }
