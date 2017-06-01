@@ -26,27 +26,17 @@ export default class extends Component {
         this.state = {
             user: null,
             data: null,
-            key: null
+            key: window.location.pathname.split('/')[1] || 'permadata'
         }
     }
 
     componentWillMount() {
-        
-        this.search(window.location.pathname.split('/')[1])
 
         firebase.auth().onAuthStateChanged(user => this.setState({ user }))
 
         firebase.auth().getRedirectResult().then(result => this.setState({ user: result.user }))
-    }
 
-    refresh() {
-
-        this.search(this.state.key)
-    }
-
-    search(key) {
-
-        key = key || 'permadata'
+        const key = this.state.key
 
         const dataRef = firebase.database().ref('datas/' + key )
         
@@ -55,10 +45,41 @@ export default class extends Component {
             const data = snapshot.val()
 
             if (data) 
-                this.setState({ data, key })
+                this.setState({ data })
 
-            else this.setState({ data: null, key })
+            else this.setState({ creation: true, form: { title: null } })
         })
+    }
+
+    refresh() {
+
+        this.search(this.state.key)
+    }
+
+    passiveSearch(e) {
+        
+        const key = e.target.value
+
+        if (key) {
+
+            const dataRef = firebase.database().ref('datas/' + key)
+            
+            dataRef.once('value').then(snapshot => {
+                
+                if ( !snapshot.val() )
+
+                    this.setState({ searchedDataMisses: true })
+
+                else this.setState({ searchedDataMisses: null })
+            })
+        }
+    }
+
+    search(e) {
+        
+        if (e.charCode === 13) 
+
+            window.location.assign(e.target.value)
     }
 
     openForm() {
@@ -80,13 +101,7 @@ export default class extends Component {
                 title
             }).then(() => {
 
-                this.setState({ 
-
-                    form: null,
-                    key: null
-                })
-                
-                this.search(key)
+                window.location.reload()
             })
         }
     }
@@ -99,13 +114,13 @@ export default class extends Component {
 
             const dataRef = firebase.database().ref('datas/' + key)
             
-            dataRef.remove().then(() => this.search())
+            dataRef.remove().then(() => window.location.assign('/'))
         }
     }
 
     render() {
 
-        const { user, key, data, form } = this.state
+        const { user, key, data, creation, form, searchedDataMisses } = this.state
 
         const commonContainerParams = {
 
@@ -149,8 +164,11 @@ export default class extends Component {
 
                     <h2 className="logo four columns clickable"
                             onClick={ () => window.location.replace('/') }>permadata</h2>
-                    <input type="text" className="search six columns" placeholder="rechercher"
-                            onChange={ (e) => this.search(e.target.value) } />
+
+                    <input type="text" placeholder="rechercher"
+                            className={ 'search six columns' + ( searchedDataMisses ? ' missing' : '' ) }
+                            onChange={ (e) => this.passiveSearch(e) }
+                            onKeyPress={ (e) => this.search(e) } />
 
                     {
                         user ? (
@@ -168,51 +186,48 @@ export default class extends Component {
                 </div>
                 <div className="title">
 
-                    { data && (
-
-                        <h1>{ data.title } {
-
-                            data.author === firebase.auth().currentUser.uid && (
-
-                                <span className="clickable"
-                                        onClick={ () => this.deleteData }>
-                                    [x]</span>
-                            )
-                        }</h1>
-                     )}
+                    {
+                        !data && !creation && (
+                            
+                            <h1>chargement ...</h1>
+                        )
+                    }
 
                     { 
-                        ( !data && !form && key ) && (
+                        data && (
 
-                            <div>
-                                <p><b>"{ key }"</b> n'existe pas encore</p>
-                                <button type="button"
-                                        onClick={ () => this.setState({ form: { title: null }}) }>
-                                    ajouter la page</button>
-                            </div>
+                            <h1>{ data.title } {
+
+                                data.author === firebase.auth().currentUser.uid && (
+
+                                    <span className="clickable"
+                                            onClick={ () => this.deleteData() }>
+                                        [x]</span>
+                                )
+                            }</h1>
                         )
                     }
 
                     {
-                        form && (
+                        creation && (
 
                             <div className="data-form row">
+
                                 <input type="text" className="four columns"
                                         placeholder={ 'titre pour la page "' + key + '"' }
                                         onChange={ (e) => this.setState({ form: { title: e.target.value }}) } />
                                         
                                 <button type="button" className="four columns"
-                                        disabled={ !this.state.form.title && 'disabled' }
+                                        disabled={ !form.title && 'disabled' }
                                         onClick={ () => this.sendForm() }>
                                     envoyer</button>
-                                    
+
                                 <button type="button" className="four columns"
                                         onClick={ () => this.setState({ form: null }) }>
                                     annuler</button>
                             </div>
                         )
                     }
-
                 </div>
                 <div className="content">
 

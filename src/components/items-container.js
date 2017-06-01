@@ -43,7 +43,7 @@ export default class extends Component {
     render() {
 
         const { dataId, itemType,propType, refresh, title, items } = this.props
-        const { form } = this.state || { form: null }
+        const form = this.state ? this.state.form : null
 
         const itemList = (items || []).map((item, index) => {
             

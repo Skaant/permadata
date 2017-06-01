@@ -23,6 +23,11 @@
     color: #222;
 }
 
+.header > .search.missing {
+
+    color: #EF6F6C;
+}
+
 .header > .search,
 .header > .search:hover,
 .header > .search:focus {
