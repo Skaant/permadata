@@ -30,17 +30,17 @@ export default ({ dataId, itemType, propType, refresh, index, value, author, vot
     return (
 
         <span className="item tag is-white is-medium">
-
-            <span>{ value }</span>
             
             {
                 itemType === 'link' && (
 
-                    <span className="clickable" 
-                            onClick={ () => window.location.assign('/' + url) }>
-                        <b>({ url })</b></span>
+                    <span className="clickable link-url" 
+                            onClick={ () => window.location.assign('/?key=' + url) }>
+                        <b>{ url }</b> - </span>
                 )
             }
+
+            <span>{ value }</span>
 
             <ItemVote { ...itemVoteParams } />
             

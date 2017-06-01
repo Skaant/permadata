@@ -45,6 +45,11 @@
     margin-top: 3px;
 }
 
+.link-url > b {
+    
+    text-decoration: underline;
+}
+
 .voted {
 
     font-weight: bold;

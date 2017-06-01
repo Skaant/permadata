@@ -5,11 +5,6 @@ import Item from './item'
 
 export default class extends Component {
 
-    componentDidMount() {
-
-        console.log(this.mainInput)
-    }
-
     updateForm(key, e) {
 
         const value = e.target.value
@@ -68,7 +63,7 @@ export default class extends Component {
         
         return (
 
-            <div className={ itemType + 's-container' }>
+            <div>
 
                 <h3 className="title is-4">{ title }</h3>
                 

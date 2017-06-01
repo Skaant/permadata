@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import firebase from 'firebase'
 
+
 import ItemsContainer from './items-container'
 
 import firebaseConfig from '../firebase.config'
+
+import urlParameters from '../helpers/url-parameters'
 
 import '../styles/app.css'
 
@@ -27,7 +30,7 @@ export default class extends Component {
 
             user: null,
             data: null,
-            key: window.location.pathname.split('/')[1] || 'permadata'
+            key: urlParameters('key') || 'permadata'
         }
     }
 
@@ -82,7 +85,7 @@ export default class extends Component {
         
         if (e.charCode === 13) 
 
-            window.location.assign(e.target.value)
+            window.location.assign('/?key=' + e.target.value)
     }
 
     openForm() {
