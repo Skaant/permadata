@@ -154,10 +154,12 @@ export default class extends Component {
 
                     {
                         user ? (
+
                             <button type="button" title={ user.displayName }
                                     onClick={ () => firebase.auth().signOut() }>
                                 deconnexion</button>                            
                         ) : (
+
                             <button type="button"
                                     onClick={ () => firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()) }>
                                 connexion</button>
@@ -167,10 +169,13 @@ export default class extends Component {
                 <div className="title">
 
                     { data && (
+
                         <h1>{ data.title } {
+
                             data.author === firebase.auth().currentUser.uid && (
+
                                 <span className="clickable"
-                                        onClick={ this.deleteData.bind(this) }>
+                                        onClick={ () => this.deleteData }>
                                     [x]</span>
                             )
                         }</h1>
@@ -178,6 +183,7 @@ export default class extends Component {
 
                     { 
                         ( !data && !form && key ) && (
+
                             <div>
                                 <p><b>"{ key }"</b> n'existe pas encore</p>
                                 <button type="button"
@@ -189,14 +195,17 @@ export default class extends Component {
 
                     {
                         form && (
+
                             <div className="data-form row">
                                 <input type="text" className="four columns"
                                         placeholder={ 'titre pour la page "' + key + '"' }
                                         onChange={ (e) => this.setState({ form: { title: e.target.value }}) } />
+                                        
                                 <button type="button" className="four columns"
                                         disabled={ !this.state.form.title && 'disabled' }
                                         onClick={ () => this.sendForm() }>
                                     envoyer</button>
+                                    
                                 <button type="button" className="four columns"
                                         onClick={ () => this.setState({ form: null }) }>
                                     annuler</button>

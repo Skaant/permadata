@@ -13,30 +13,36 @@ export default class extends Component {
     }
 
     sendForm() {
+        
+        const currentUser = firebase.auth().currentUser
 
-        const { itemType, propType, refresh } = this.props
-        const { form } = this.state
+        if (currentUser) {
 
-        const itemListRef = firebase.database().ref('datas/' + this.props.dataId + '/' + itemType + 's' + (
+            const { dataId, itemType, propType, refresh } = this.props
+            const { form } = this.state
 
-            itemType === 'prop' ? '/' + propType : ''
-        ))
+            const itemListRef = firebase.database().ref('datas/' + dataId + '/' + itemType + 's' + (
 
-        itemListRef.once('value').then(snapshot => {
-            
-            const itemList = snapshot.val()
+                itemType === 'prop' ? '/' + propType : ''
+            ))
 
-            itemListRef.set( ( itemList || [] ).concat([ form ]) ).then(() => {
+            itemListRef.once('value').then(snapshot => {
+                
+                const itemList = snapshot.val()
+                const item = Object.assign({}, form, { author: currentUser.uid })
 
-                this.setState({ form: null })    
-                refresh()
+                itemListRef.set( ( itemList || [] ).concat([ item ]) ).then(() => {
+
+                    this.setState({ form: null })    
+                    refresh()
+                })
             })
-        })
+        }
     }
 
     render() {
 
-        const { itemType, title, items, propType } = this.props
+        const { dataId, itemType,propType, refresh, title, items } = this.props
         const { form } = this.state || { form: null }
 
         const itemList = (items || []).map((item, index) => {
@@ -44,8 +50,11 @@ export default class extends Component {
             const params = { 
 
                 key: index,
+                dataId,
                 itemType,
-                propType
+                propType,
+                refresh,
+                index
             }
 
             return <Item { ...params } { ...item } />
