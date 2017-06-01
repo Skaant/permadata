@@ -1,18 +1,21 @@
 import React from 'react'
 import firebase from 'firebase'
 
-export default ({ dataId, itemType, propType, refresh, index, value, votes, author, url }) => {
+import ItemVote from './item-vote'
+
+export default ({ dataId, itemType, propType, refresh, index, value, author, votes, url }) => {
 
     const deleteItem = () => {
 
-        const itemListRef = firebase.database().ref('datas/' + dataId + '/' + itemType + 's' + (
+        const itemListRef = firebase.database().ref(
 
-            itemType === 'prop' ? '/' + propType : ''
-        ))
+            'datas/' + dataId + '/' + itemType + 's' + 
+            ( itemType === 'prop' ? '/' + propType : '' )
+        )
 
         itemListRef.once('value').then(snapshot => {
             
-            const itemList = snapshot.val()
+            let itemList = snapshot.val()
 
             itemList.splice(index, 1)
 
@@ -20,7 +23,10 @@ export default ({ dataId, itemType, propType, refresh, index, value, votes, auth
         })
     }
 
+    const itemVoteParams = { dataId, itemType, propType, refresh, index, votes }
+
     return (
+
         <div>
             { value } {
                 itemType === 'link' && (
@@ -37,6 +43,7 @@ export default ({ dataId, itemType, propType, refresh, index, value, votes, auth
                         [x]</span>
                 )
             }
+            <ItemVote { ...itemVoteParams } />
         </div>
     )
 }
