@@ -25,10 +25,13 @@
     width: 50vw;
 }
 
-.item {
+.item.tag {
 
-    margin: 0 3px;
-    padding-top: 3px;
+    height: initial;
+    margin: 3px 3px;
+    padding: 5px 0.875em;
+
+    white-space: pre-line;
 }
 
 .item.notification {

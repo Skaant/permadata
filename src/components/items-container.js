@@ -5,6 +5,11 @@ import Item from './item'
 
 export default class extends Component {
 
+    componentDidMount() {
+
+        console.log(this.mainInput)
+    }
+
     updateForm(key, e) {
 
         const value = e.target.value
@@ -88,7 +93,7 @@ export default class extends Component {
                                         <div className="field">
                                             <p className="control">
 
-                                                <input type="text" className="input" placeholder="le titre de l'idée"
+                                                <input type="text" className="input" placeholder="le titre de l'idée" autoFocus
                                                         onChange={ e => this.updateForm('value', e) }/>
                                             </p>
                                         </div>
@@ -128,7 +133,7 @@ export default class extends Component {
 
                             <span className="item tag is-info is-medium clickable"
                                     onClick={ () => this.setState({ form: {} }) }>
-                                ajouter</span>
+                                ajouter { itemType === 'keyword' ? ' un mot clé' : '' }</span>
                         )
                     }
                 </div>
