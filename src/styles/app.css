@@ -1,3 +1,5 @@
+/* *** HEADER *** */
+
 .header {
 
     padding: 10px 0;
@@ -27,6 +29,8 @@
     border: 0;
     border-bottom: solid 1px #222;
 }
+
+/* *** TITLE *** */
 
 .title {
 
@@ -64,4 +68,11 @@
     background-color: #8FBC94;
     color: #222;
     border: #222;
+}
+
+/* *** CUSTOMS *** */
+
+.clickable {
+
+    cursor: pointer;
 }

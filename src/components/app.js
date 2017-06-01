@@ -12,7 +12,7 @@ const PROPS_TYPES = {
     context: 'contexte',
     inputs: 'intrants',
     outputs: 'extrants',
-    functions: 'functions'
+    functions: 'fonctions'
 }
 
 export default class extends Component {
@@ -32,11 +32,16 @@ export default class extends Component {
 
     componentWillMount() {
         
-        this.search()
+        this.search(window.location.pathname.split('/')[1])
 
         firebase.auth().onAuthStateChanged(user => this.setState({ user }))
 
         firebase.auth().getRedirectResult().then(result => this.setState({ user: result.user }))
+    }
+
+    refresh() {
+
+        this.search(this.state.key)
     }
 
     search(key) {
@@ -64,7 +69,6 @@ export default class extends Component {
     sendForm() {
         
         const currentUser = firebase.auth().currentUser
-        console.log(currentUser)
 
         if (currentUser) {
 
@@ -73,18 +77,11 @@ export default class extends Component {
             firebase.database().ref('/datas/'+ key ).set({
 
                 author: currentUser.uid,
-                title,
-                keywords: [],
-                links: [],
-                props: {
-                    context: [],
-                    inputs: [],
-                    outputs: [],
-                    functions: []
-                }
+                title
             }).then(() => {
 
                 this.setState({ 
+
                     form: null,
                     key: null
                 })
@@ -98,11 +95,11 @@ export default class extends Component {
 
         const { data: { title }, key } = this.state
 
-        console.log(title, key)
-
         if (window.confirm('voulez-vous vraiment supprimer votre page "' + title + '" [' + key + '] ?')) {
 
-            const dataRef = firebase.database().ref('datas/' + key).remove().then(() => this.search())
+            const dataRef = firebase.database().ref('datas/' + key)
+            
+            dataRef.remove().then(() => this.search())
         }
     }
 
@@ -110,28 +107,36 @@ export default class extends Component {
 
         const { user, key, data, form } = this.state
 
-        const keywordsContainerParams = {
+        const commonContainerParams = {
+
+            dataId: key,
+            refresh: this.refresh.bind(this)
+        }
+
+        const keywordsContainerParams = Object.assign({}, commonContainerParams, {
 
             itemType: 'keyword',
+            title: 'mots-clés',
             items: this.state.data && this.state.data.keywords
-        }
+        })
 
-        const linksContainerParams = {
+        const linksContainerParams = Object.assign({}, commonContainerParams, {
 
             itemType: 'link',
+            title: 'relations',
             items: this.state.data && this.state.data.links
-        }
+        })
 
         const propsTypesContainers = Object.keys(PROPS_TYPES).map(prop => {
 
-            const params = {
+            const params = Object.assign({}, commonContainerParams, {
 
                 key: prop,
                 itemType: 'prop',
                 propType: prop,
                 title: PROPS_TYPES[prop],
-                items: this.state.data && this.state.data.props
-            }
+                items: ( this.state.data && this.state.data.props ) && this.state.data.props[prop]
+            })
 
             return <ItemsContainer { ...params } />
         })
@@ -142,7 +147,8 @@ export default class extends Component {
 
                 <div className="header row">
 
-                    <h2 className="logo four columns">permadata</h2>
+                    <h2 className="logo four columns clickable"
+                            onClick={ () => window.location.replace('/') }>permadata</h2>
                     <input type="text" className="search six columns" placeholder="rechercher"
                             onChange={ (e) => this.search(e.target.value) } />
 
@@ -162,8 +168,11 @@ export default class extends Component {
 
                     { data && (
                         <h1>{ data.title } {
-                            data.author === firebase.auth().currentUser.uid && <span
-                                    onClick={ this.deleteData.bind(this) }>[x]</span>    
+                            data.author === firebase.auth().currentUser.uid && (
+                                <span className="clickable"
+                                        onClick={ this.deleteData.bind(this) }>
+                                    [x]</span>
+                            )
                         }</h1>
                      )}
 
